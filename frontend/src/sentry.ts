@@ -11,11 +11,11 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 
+  // backend へのリクエストに sentry-trace / baggage ヘッダーを付与
+  tracePropagationTargets: ["localhost:3000"],
+
   integrations: [
-    Sentry.browserTracingIntegration({
-      // backend へのリクエストに sentry-trace / baggage ヘッダーを付与
-      tracePropagationTargets: ["localhost:3000"],
-    }),
+    Sentry.browserTracingIntegration(),
     Sentry.replayIntegration(),
   ],
 });
