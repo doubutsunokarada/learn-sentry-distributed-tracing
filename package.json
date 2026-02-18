@@ -1,0 +1,18 @@
+{
+  "name": "learn-sentry-distributed-tracing",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "mock-idp"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=backend & npm run dev --workspace=mock-idp & npm run dev --workspace=frontend & wait",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:mock-idp": "npm run dev --workspace=mock-idp",
+    "build": "npm run build --workspace=frontend",
+    "start": "npm run start --workspace=backend & npm run start --workspace=mock-idp & npm run start --workspace=frontend & wait",
+    "install:all": "npm install"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "mock-idp",
+  "version": "1.0.0",
+  "description": "Mock external IdP server",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
