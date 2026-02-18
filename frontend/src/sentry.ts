@@ -4,6 +4,9 @@ Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.MODE,
 
+  // 広告ブロッカー回避: Sentryへの送信を自サーバー経由にする
+  tunnel: "/sentry-tunnel",
+
   // パフォーマンスモニタリング
   tracesSampleRate: 1.0,
 

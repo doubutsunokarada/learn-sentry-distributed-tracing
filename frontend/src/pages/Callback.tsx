@@ -178,6 +178,26 @@ export default function Callback() {
       }
 
       const userData = await userRes.json();
+
+      // フロントエンド固有のエラー: ユーザーデータの加工処理で失敗
+      // 40%の確率でフロントエンド側のデータ処理エラーを発生させる
+      if (Math.random() < 0.4) {
+        const processingErr = new TypeError(
+          `Failed to render user profile: Cannot read properties of undefined (reading 'avatarUrl') - userData.profile is ${typeof (userData as Record<string, unknown>).profile}`
+        );
+        Sentry.captureException(processingErr, {
+          tags: { "error.origin": "frontend", "error.phase": "data_processing" },
+          contexts: {
+            userData: {
+              keys: Object.keys(userData),
+              hasProfile: "profile" in userData,
+            },
+          },
+        });
+        setUserInfoError(`フロントエンドエラー: ${processingErr.message}`);
+        return;
+      }
+
       setUserInfo(userData);
     } catch (e) {
       const err =

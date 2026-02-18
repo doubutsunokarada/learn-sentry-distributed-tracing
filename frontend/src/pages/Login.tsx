@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as Sentry from "@sentry/react";
 
 const API = "http://localhost:3000";
 
@@ -13,11 +14,34 @@ export default function Login() {
       const res = await fetch(`${API}/api/auth/authorize`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+
+      // フロントエンド固有のエラー: レスポンスのバリデーション失敗
+      // 30%の確率でフロントエンド側のURL検証エラーを発生させる
+      if (Math.random() < 0.3) {
+        const validationErr = new Error(
+          `Authorization URL validation failed: URL scheme must be https in production, got "${new URL(data.authorization_url).protocol}" - potential security risk detected`
+        );
+        Sentry.captureException(validationErr, {
+          tags: { "error.origin": "frontend", "error.phase": "url_validation" },
+          contexts: {
+            authorization: {
+              url_origin: new URL(data.authorization_url).origin,
+              has_state: data.authorization_url.includes("state="),
+            },
+          },
+        });
+        setError(`フロントエンドエラー: ${validationErr.message}`);
+        setLoading(false);
+        return;
+      }
+
       window.location.href = data.authorization_url;
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "Failed to start authorization"
-      );
+      const err = e instanceof Error ? e : new Error("Failed to start authorization");
+      Sentry.captureException(err, {
+        tags: { "error.origin": "frontend", "error.phase": "authorize_request" },
+      });
+      setError(err.message);
       setLoading(false);
     }
   };
